@@ -27,7 +27,7 @@ function AnalyticsPage() {
   const [topCampaigns, setTopCampaigns] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
-  const [sortBy, setSortBy] = useState("total");
+  const [sortBy, setSortBy] = useState("latest");
   const [campaignFilter, setCampaignFilter] = useState("all");
 
   useEffect(() => {
@@ -308,9 +308,7 @@ function AnalyticsPage() {
                           </TableCell>
 
                           <TableCell>
-                            <Badge variant={statusVariant}>
-                              {statusLabel}
-                            </Badge>
+                            <Badge variant={statusVariant}>{statusLabel}</Badge>
                           </TableCell>
 
                           <TableCell>{campaign.total}</TableCell>
