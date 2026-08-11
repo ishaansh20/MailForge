@@ -4,7 +4,10 @@ const { CAMPAIGN_SEND_QUEUE_NAME } = require("../queues/campaignSend.queue");
 const { sendCampaignEmailToRecipient } = require("../services/campaignMailer");
 const { env } = require("../config/env");
 const { Campaign, CAMPAIGN_STATUS } = require("../models/campaign.model");
-const { CampaignRecipient, RECIPIENT_STATUS } = require("../models/campaignRecipient.model");
+const {
+  CampaignRecipient,
+  RECIPIENT_STATUS,
+} = require("../models/campaignRecipient.model");
 const { SmtpConfig } = require("../models/smtp.model");
 const { createNotification } = require("../services/notification.service");
 
@@ -58,14 +61,24 @@ async function processJob(job) {
   const campaign = await Campaign.findById(campaignId);
 
   if (!campaign) {
-    await markRecipientFailed(campaignId, recipient, "Campaign no longer exists");
+    await markRecipientFailed(
+      campaignId,
+      recipient,
+      "Campaign no longer exists",
+    );
     return;
   }
 
-  const smtpConfig = await SmtpConfig.findById(campaign.smtpConfig).select("+password");
+  const smtpConfig = await SmtpConfig.findById(campaign.smtpConfig).select(
+    "+password",
+  );
 
   if (!smtpConfig) {
-    await markRecipientFailed(campaignId, recipient, "SMTP configuration no longer exists");
+    await markRecipientFailed(
+      campaignId,
+      recipient,
+      "SMTP configuration no longer exists",
+    );
     return;
   }
 
@@ -78,13 +91,24 @@ async function processJob(job) {
     });
 
     if (result?.rejected?.length > 0) {
-      await markRecipientFailed(campaignId, recipient, "Recipient address rejected by mail server");
+      await markRecipientFailed(
+        campaignId,
+        recipient,
+        "Recipient address rejected by mail server",
+      );
       return;
     }
 
     recipient.status = RECIPIENT_STATUS.SENT;
     recipient.sentAt = new Date();
     recipient.providerMessageId = result?.messageId || null;
+
+    console.log("[BREVO SEND]", {
+      recipientId: recipient._id.toString(),
+      email: recipient.email,
+      messageId: result?.messageId || null,
+    });
+
     await recipient.save();
     await Campaign.findByIdAndUpdate(campaignId, { $inc: { "stats.sent": 1 } });
     await finalizeCampaignIfDone(campaignId);
