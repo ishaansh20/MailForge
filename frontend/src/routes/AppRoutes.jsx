@@ -82,6 +82,13 @@ const AnalyticsPage = lazy(() =>
     default: module.AnalyticsPage,
   })),
 );
+
+const CampaignAnalyticsPage = lazy(() =>
+  import("../features/analytics/CampaignAnalyticsPage.jsx").then((module) => ({
+    default: module.CampaignAnalyticsPage,
+  })),
+);
+
 const SettingsPage = lazy(() =>
   import("../features/settings/SettingsPage.jsx").then((module) => ({
     default: module.SettingsPage,
@@ -122,7 +129,10 @@ function AppRoutes() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           </Route>
-          <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordPage />}
+          />
           <Route path="/unsubscribe/:token" element={<UnsubscribePage />} />
         </Route>
 
@@ -142,6 +152,10 @@ function AppRoutes() {
               <Route path="/campaigns/new" element={<CampaignWizardPage />} />
               <Route path="/logs" element={<LogsPage />} />
               <Route path="/analytics" element={<AnalyticsPage />} />
+              <Route
+                path="/analytics/campaign/:campaignId"
+                element={<CampaignAnalyticsPage />}
+              />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
             </Route>

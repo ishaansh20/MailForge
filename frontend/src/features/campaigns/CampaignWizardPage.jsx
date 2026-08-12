@@ -70,6 +70,8 @@ function CampaignWizardPage() {
   const [previewReloadToken, setPreviewReloadToken] = useState(0);
   const [excludedContacts, setExcludedContacts] = useState([]);
 
+  const [selectedPreviewContact, setSelectedPreviewContact] = useState(null);
+
   const [isAddContactOpen, setIsAddContactOpen] = useState(false);
   const [contactServerError, setContactServerError] = useState("");
   const [editingContact, setEditingContact] = useState(null);
@@ -462,7 +464,99 @@ function CampaignWizardPage() {
                     Add Contact
                   </Button>
                 </div>
+                {selectedPreviewContact ? (
+                  <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div>
+                        <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                          Recipient Details
+                        </p>
 
+                        <h3 className="mt-1 text-xl font-semibold text-stone-950">
+                          {selectedPreviewContact.name || "Unnamed Contact"}
+                        </h3>
+
+                        <p className="mt-1 text-sm text-stone-500">
+                          {selectedPreviewContact.email || "No email address"}
+                        </p>
+                      </div>
+
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => setSelectedPreviewContact(null)}
+                      >
+                        Back to Recipients
+                      </Button>
+                    </div>
+
+                    <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                          Name
+                        </p>
+                        <p className="mt-1 text-sm font-medium text-stone-950">
+                          {selectedPreviewContact.name || "—"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                          Email
+                        </p>
+                        <p className="mt-1 break-all text-sm font-medium text-stone-950">
+                          {selectedPreviewContact.email || "—"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                          Status
+                        </p>
+
+                        <div className="mt-2">
+                          <Badge
+                            variant={
+                              statusBadgeVariant[
+                                selectedPreviewContact.status
+                              ] || "neutral"
+                            }
+                          >
+                            {selectedPreviewContact.status || "subscribed"}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                          Contact ID
+                        </p>
+
+                        <p className="mt-1 break-all text-sm text-stone-700">
+                          {selectedPreviewContact.id || "—"}
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+                        <p className="text-xs font-medium uppercase tracking-wider text-stone-400">
+                          Added
+                        </p>
+
+                        <p className="mt-1 text-sm text-stone-700">
+                          {selectedPreviewContact.createdAt
+                            ? new Intl.DateTimeFormat("en", {
+                                dateStyle: "medium",
+                                timeStyle: "short",
+                              }).format(
+                                new Date(selectedPreviewContact.createdAt),
+                              )
+                            : "—"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
                 <div className="overflow-hidden rounded-xl border border-stone-200">
                   {isLoadingPreview ? (
                     <div className="space-y-2 p-4">
@@ -496,7 +590,13 @@ function CampaignWizardPage() {
                                 !excludedContacts.includes(contact.id),
                             )
                             .map((contact) => (
-                              <TableRow key={contact.id}>
+                              <TableRow
+                                key={contact.id}
+                                className="cursor-pointer transition-colors hover:bg-stone-50"
+                                onClick={() =>
+                                  setSelectedPreviewContact(contact)
+                                }
+                              >
                                 <TableCell className="font-medium text-stone-950">
                                   {contact.name}
                                 </TableCell>
@@ -515,7 +615,10 @@ function CampaignWizardPage() {
                                   <div className="flex items-center justify-end gap-2">
                                     <button
                                       type="button"
-                                      onClick={() => setEditingContact(contact)}
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        setEditingContact(contact);
+                                      }}
                                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-stone-200 bg-white text-stone-500 shadow-[0_1px_2px_rgba(28,25,23,0.04)] transition-all duration-150 ease-out hover:border-stone-300 hover:bg-stone-50 hover:text-stone-950"
                                       aria-label={`Edit ${contact.name}`}
                                     >
@@ -524,9 +627,10 @@ function CampaignWizardPage() {
 
                                     <button
                                       type="button"
-                                      onClick={() =>
-                                        handleRemoveFromCampaign(contact)
-                                      }
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        handleRemoveFromCampaign(contact);
+                                      }}
                                       className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-200 bg-white text-rose-500 transition-all duration-150 ease-out hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600"
                                       aria-label={`Remove ${contact.name} from campaign`}
                                       title="Remove from campaign"

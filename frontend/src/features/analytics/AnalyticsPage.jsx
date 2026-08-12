@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card.jsx";
 import { StatCard } from "../../components/ui/StatCard.jsx";
 import { Badge } from "../../components/ui/Badge.jsx";
@@ -22,6 +23,7 @@ import {
 } from "../../services/analyticsService.js";
 
 function AnalyticsPage() {
+  const navigate = useNavigate();
   const [overview, setOverview] = useState(null);
   const [sendsOverTime, setSendsOverTime] = useState([]);
   const [topCampaigns, setTopCampaigns] = useState([]);
@@ -299,7 +301,13 @@ function AnalyticsPage() {
                               : "neutral";
 
                       return (
-                        <TableRow key={campaign.id}>
+                        <TableRow
+                          key={campaign.id}
+                          className="cursor-pointer"
+                          onClick={() =>
+                            navigate(`/analytics/campaign/${campaign.id}`)
+                          }
+                        >
                           <TableCell className="min-w-48 font-medium text-stone-950">
                             <div>{campaign.name}</div>
                             <div className="mt-1 max-w-xs truncate text-xs font-normal text-stone-500">

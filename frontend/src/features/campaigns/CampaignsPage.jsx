@@ -407,7 +407,13 @@ function CampaignsPage() {
                 </TableHead>
                 <TableBody>
                   {items.map((campaign) => (
-                    <TableRow key={campaign.id}>
+                    <TableRow
+                      key={campaign.id}
+                      className="cursor-pointer transition-colors hover:bg-stone-50"
+                      onClick={() =>
+                        navigate(`/analytics/campaign/${campaign.id}`)
+                      }
+                    >
                       <TableCell className="font-medium text-stone-950">
                         <div>{campaign.name}</div>
                         <div className="text-xs text-stone-400">
@@ -448,14 +454,20 @@ function CampaignsPage() {
                       <TableCell>
                         {formatDateTime(campaign.createdAt)}
                       </TableCell>
-                      <TableCell className="min-w-[180px] text-right">
+                      <TableCell
+                        className="min-w-[180px] text-right"
+                        onClick={(event) => event.stopPropagation()}
+                      >
                         <div className="flex items-center justify-end gap-2 whitespace-nowrap">
                           {campaign.status === "draft" ? (
                             <Button
                               size="sm"
                               className="min-w-[110px] whitespace-nowrap px-4"
                               leftIcon={<Icon name="mail" size={14} />}
-                              onClick={() => setSendTarget(campaign)}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setSendTarget(campaign);
+                              }}
                             >
                               Send Now
                             </Button>
@@ -463,7 +475,10 @@ function CampaignsPage() {
 
                           <Dropdown
                             trigger={
-                              <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-500 shadow-[0_1px_2px_rgba(28,25,23,0.04)] transition-all duration-150 ease-out hover:border-stone-300 hover:bg-stone-50 hover:text-stone-950 hover:shadow-[var(--shadow-lift)] active:scale-[0.98]">
+                              <span
+                                onClick={(event) => event.stopPropagation()}
+                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-500 shadow-[0_1px_2px_rgba(28,25,23,0.04)] transition-all duration-150 ease-out hover:border-stone-300 hover:bg-stone-50 hover:text-stone-950 hover:shadow-[var(--shadow-lift)] active:scale-[0.98]"
+                              >
                                 <Icon name="more" size={18} />
                               </span>
                             }
