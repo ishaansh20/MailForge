@@ -492,7 +492,13 @@ function DashboardPage() {
                     </TableHead>
                     <TableBody>
                       {recentCampaigns.map((campaign) => (
-                        <TableRow key={campaign.id}>
+                        <TableRow
+                          key={campaign.id}
+                          className="cursor-pointer hover:bg-stone-50"
+                          onClick={() =>
+                            navigate(`/analytics/campaign/${campaign.id}`)
+                          }
+                        >
                           <TableCell className="font-medium text-stone-950">
                             {campaign.name}
                           </TableCell>

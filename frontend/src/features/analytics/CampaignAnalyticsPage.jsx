@@ -123,7 +123,17 @@ function CampaignAnalyticsPage() {
   }
 
   const stats = campaign.stats || {};
-  const rates = campaign.rates || {};
+
+  const deliveryRate =
+    stats.total > 0
+      ? ((stats.delivered / stats.total) * 100).toFixed(1)
+      : "0.0";
+
+  const openRate =
+    stats.total > 0 ? ((stats.opened / stats.total) * 100).toFixed(1) : "0.0";
+
+  const clickRate =
+    stats.total > 0 ? ((stats.clicked / stats.total) * 100).toFixed(1) : "0.0";
 
   return (
     <div className="space-y-6">
@@ -191,9 +201,9 @@ function CampaignAnalyticsPage() {
 
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-3">
-            <Stat label="Delivery Rate" value={`${rates.deliveryRate ?? 0}%`} />
-            <Stat label="Open Rate" value={`${rates.openRate ?? 0}%`} />
-            <Stat label="Click Rate" value={`${rates.clickRate ?? 0}%`} />
+            <Stat label="Delivery Rate" value={`${deliveryRate}%`} />
+            <Stat label="Open Rate" value={`${openRate}%`} />
+            <Stat label="Click Rate" value={`${clickRate}%`} />
           </div>
         </CardContent>
       </Card>
