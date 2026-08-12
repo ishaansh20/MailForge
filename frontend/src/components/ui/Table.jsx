@@ -47,7 +47,7 @@ function TableRow({ children, className = "", ...props }) {
   return (
     <tr
       className={cn(
-        "transition-colors duration-150 ease-out hover:bg-stone-50/80",
+        "transition-colors duration-150 ease-out hover:bg-stone-100",
         className,
       )}
       {...props}

@@ -409,7 +409,7 @@ function CampaignsPage() {
                   {items.map((campaign) => (
                     <TableRow
                       key={campaign.id}
-                      className="cursor-pointer transition-colors hover:bg-stone-50"
+                      className="cursor-pointer"
                       onClick={() =>
                         navigate(`/analytics/campaign/${campaign.id}`)
                       }

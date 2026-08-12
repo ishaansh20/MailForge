@@ -60,11 +60,9 @@ async function handleBrevoEvent(payload) {
     event === "uniqueOpened"
   ) {
     const isFirstOpen = !recipient.openedAt;
-    recipient.openCount += 1;
 
-    if (isFirstOpen) {
-      recipient.openedAt = new Date();
-    }
+    recipient.openCount += 1;
+    recipient.openedAt = new Date();
 
     await recipient.save();
 
@@ -73,17 +71,16 @@ async function handleBrevoEvent(payload) {
         $inc: { "stats.opened": 1 },
       });
     }
+
     return;
   }
 
   if (event === "click") {
     const isFirstClick = !recipient.clickedAt;
-    recipient.clickCount += 1;
-    recipient.lastClickedUrl = payload.link || recipient.lastClickedUrl;
 
-    if (isFirstClick) {
-      recipient.clickedAt = new Date();
-    }
+    recipient.clickCount += 1;
+    recipient.clickedAt = new Date();
+    recipient.lastClickedUrl = payload.link || recipient.lastClickedUrl;
 
     await recipient.save();
 
@@ -92,6 +89,7 @@ async function handleBrevoEvent(payload) {
         $inc: { "stats.clicked": 1 },
       });
     }
+
     return;
   }
 

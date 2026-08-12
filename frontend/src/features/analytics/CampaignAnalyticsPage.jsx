@@ -244,7 +244,10 @@ function CampaignAnalyticsPage() {
 
                 <TableBody>
                   {recipients.map((recipient) => (
-                    <TableRow key={recipient.id}>
+                    <TableRow
+                      key={recipient.id}
+                      className="transition-colors duration-150 hover:bg-stone-100"
+                    >
                       <TableCell className="font-medium text-stone-950">
                         {recipient.name || "—"}
                       </TableCell>
@@ -282,12 +285,14 @@ function CampaignAnalyticsPage() {
                             <span className="font-medium text-stone-950">
                               Yes
                             </span>
+
                             <p className="mt-1 text-xs text-stone-400">
                               {recipient.openCount || 0} time
                               {recipient.openCount === 1 ? "" : "s"}
                             </p>
-                            <p className="text-xs text-stone-400">
-                              {formatDateTime(recipient.openedAt)}
+
+                            <p className="text-xs font-medium text-stone-500">
+                              Latest: {formatDateTime(recipient.openedAt)}
                             </p>
                           </div>
                         ) : (
@@ -301,12 +306,14 @@ function CampaignAnalyticsPage() {
                             <span className="font-medium text-stone-950">
                               Yes
                             </span>
+
                             <p className="mt-1 text-xs text-stone-400">
                               {recipient.clickCount || 0} time
                               {recipient.clickCount === 1 ? "" : "s"}
                             </p>
-                            <p className="text-xs text-stone-400">
-                              {formatDateTime(recipient.clickedAt)}
+
+                            <p className="text-xs font-medium text-stone-500">
+                              Latest: {formatDateTime(recipient.clickedAt)}
                             </p>
                           </div>
                         ) : (
