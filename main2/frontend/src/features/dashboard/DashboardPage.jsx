@@ -19,11 +19,7 @@ import { ErrorState } from "../../components/ui/ErrorState.jsx";
 import { Skeleton } from "../../components/ui/Skeleton.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
 import { SubscriberGrowthChart } from "./SubscriberGrowthChart.jsx";
-import {
-  getOverview,
-  getTrends,
-  getSubscriberGrowth,
-} from "../../services/analyticsService.js";
+import { getOverview, getTrends, getSubscriberGrowth } from "../../services/analyticsService.js";
 import { listCampaigns } from "../../services/campaignService.js";
 import { listSmtpConfigs } from "../../services/smtpService.js";
 
@@ -48,9 +44,7 @@ function formatDate(value) {
     return "—";
   }
 
-  return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(
-    new Date(value),
-  );
+  return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(value));
 }
 
 function formatRelativeTime(value) {
@@ -58,9 +52,7 @@ function formatRelativeTime(value) {
     return "—";
   }
 
-  const diffMinutes = Math.round(
-    (Date.now() - new Date(value).getTime()) / 60000,
-  );
+  const diffMinutes = Math.round((Date.now() - new Date(value).getTime()) / 60000);
 
   if (diffMinutes < 1) {
     return "Just now";
@@ -145,8 +137,7 @@ function buildAttentionItems(overview, defaultSmtp) {
       key: "no-subscribers",
       tone: "warning",
       title: "No subscribed contacts",
-      detail:
-        "Campaigns need subscribed contacts to send to. Add or import some.",
+      detail: "Campaigns need subscribed contacts to send to. Add or import some.",
       actionLabel: "Go to Contacts",
       to: "/contacts",
     });
@@ -233,13 +224,7 @@ function DashboardPage() {
       setFetchError("");
 
       try {
-        const [
-          overviewResult,
-          trendsResult,
-          growthResult,
-          campaignsResult,
-          smtpResult,
-        ] = await Promise.all([
+        const [overviewResult, trendsResult, growthResult, campaignsResult, smtpResult] = await Promise.all([
           getOverview(),
           getTrends(),
           getSubscriberGrowth(6),
@@ -253,16 +238,13 @@ function DashboardPage() {
           setSubscriberGrowth(growthResult);
           setRecentCampaigns(campaignsResult.items);
           setDefaultSmtp(
-            smtpResult.items.find((config) => config.isDefault) ||
-              smtpResult.items[0] ||
-              null,
+            smtpResult.items.find((config) => config.isDefault) || smtpResult.items[0] || null,
           );
         }
       } catch (error) {
         if (!ignore) {
           setFetchError(
-            error?.response?.data?.message ||
-              "Unable to load dashboard data right now.",
+            error?.response?.data?.message || "Unable to load dashboard data right now.",
           );
         }
       } finally {
@@ -279,16 +261,9 @@ function DashboardPage() {
     };
   }, [reloadToken]);
 
-  const greeting =
-    new Date().getHours() < 12
-      ? "morning"
-      : new Date().getHours() < 18
-        ? "afternoon"
-        : "evening";
+  const greeting = new Date().getHours() < 12 ? "morning" : new Date().getHours() < 18 ? "afternoon" : "evening";
   const activity = recentCampaigns.slice(0, 4).map(buildCampaignActivity);
-  const attentionItems = overview
-    ? buildAttentionItems(overview, defaultSmtp)
-    : [];
+  const attentionItems = overview ? buildAttentionItems(overview, defaultSmtp) : [];
   const hasGrowthActivity = subscriberGrowth.some((point) => point.count > 0);
 
   return (
@@ -302,17 +277,14 @@ function DashboardPage() {
             Track your campaign performance and audience growth.
           </p>
         </div>
-        <Button
-          leftIcon={<Icon name="plus" size={16} />}
-          onClick={() => navigate("/campaigns")}
-        >
+        <Button leftIcon={<Icon name="plus" size={16} />} onClick={() => navigate("/campaigns")}>
           New Campaign
         </Button>
       </div>
 
       {isLoading ? (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <Skeleton key={index} className="h-28 w-full" />
             ))}
@@ -323,8 +295,7 @@ function DashboardPage() {
         <ErrorState description={fetchError} onAction={refetch} />
       ) : (
         <>
-          <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-            {" "}
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
             <StatCard
               title="Total Contacts"
               value={overview.totalContacts}
@@ -332,12 +303,7 @@ function DashboardPage() {
               tone="info"
               changePercent={trends?.contacts.changePercent}
             />
-            <StatCard
-              title="Subscribed"
-              value={overview.subscribedContacts}
-              icon="check"
-              tone="success"
-            />
+            <StatCard title="Subscribed" value={overview.subscribedContacts} icon="check" tone="success" />
             <StatCard
               title="Total Campaigns"
               value={overview.totalCampaigns}
@@ -352,18 +318,8 @@ function DashboardPage() {
               tone="accent"
               changePercent={trends?.sent.changePercent}
             />
-            <StatCard
-              title="Success Rate"
-              value={`${overview.successRate}%`}
-              icon="chart"
-              tone="neutral"
-            />
-            <StatCard
-              title="Open Rate"
-              value={`${overview.openRate}%`}
-              icon="mail"
-              tone="info"
-            />
+            <StatCard title="Success Rate" value={`${overview.successRate}%`} icon="chart" tone="neutral" />
+            <StatCard title="Open Rate" value={`${overview.openRate}%`} icon="mail" tone="info" />
           </section>
 
           <section className="grid gap-6 xl:grid-cols-[1.6fr_0.9fr]">
@@ -371,12 +327,8 @@ function DashboardPage() {
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-stone-950">
-                      Subscriber Growth
-                    </h2>
-                    <p className="mt-1 text-sm text-stone-500">
-                      Cumulative subscribers over the last 6 months.
-                    </p>
+                    <h2 className="text-lg font-semibold text-stone-950">Subscriber Growth</h2>
+                    <p className="mt-1 text-sm text-stone-500">Cumulative subscribers over the last 6 months.</p>
                   </div>
                 </div>
               </CardHeader>
@@ -394,12 +346,8 @@ function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-stone-950">
-                  Activity Timeline
-                </h2>
-                <p className="mt-1 text-sm text-stone-500">
-                  What's happened recently in your workspace.
-                </p>
+                <h2 className="text-lg font-semibold text-stone-950">Activity Timeline</h2>
+                <p className="mt-1 text-sm text-stone-500">What's happened recently in your workspace.</p>
               </CardHeader>
               <CardContent className="space-y-4">
                 {activity.length === 0 ? (
@@ -429,16 +377,12 @@ function DashboardPage() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2">
-                          <p className="text-sm font-medium text-stone-950">
-                            {item.title}
-                          </p>
+                          <p className="text-sm font-medium text-stone-950">{item.title}</p>
                           <span className="whitespace-nowrap text-xs font-medium text-stone-400">
                             {formatRelativeTime(item.time)}
                           </span>
                         </div>
-                        <p className="mt-0.5 text-xs leading-5 text-stone-500">
-                          {item.detail}
-                        </p>
+                        <p className="mt-0.5 text-xs leading-5 text-stone-500">{item.detail}</p>
                       </div>
                     </div>
                   ))
@@ -452,18 +396,12 @@ function DashboardPage() {
               <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-lg font-semibold text-stone-950">
-                      Recent Campaigns
-                    </h2>
+                    <h2 className="text-lg font-semibold text-stone-950">Recent Campaigns</h2>
                     <p className="mt-1 text-sm text-stone-500">
                       Latest delivery activity across the workspace.
                     </p>
                   </div>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => navigate("/campaigns")}
-                  >
+                  <Button variant="secondary" size="sm" onClick={() => navigate("/campaigns")}>
                     View all
                   </Button>
                 </div>
@@ -493,26 +431,16 @@ function DashboardPage() {
                     <TableBody>
                       {recentCampaigns.map((campaign) => (
                         <TableRow key={campaign.id}>
-                          <TableCell className="font-medium text-stone-950">
-                            {campaign.name}
-                          </TableCell>
+                          <TableCell className="font-medium text-stone-950">{campaign.name}</TableCell>
                           <TableCell>
-                            <Badge
-                              variant={
-                                CAMPAIGN_STATUS_BADGE[campaign.status] ||
-                                "neutral"
-                              }
-                            >
-                              {CAMPAIGN_STATUS_LABEL[campaign.status] ||
-                                campaign.status}
+                            <Badge variant={CAMPAIGN_STATUS_BADGE[campaign.status] || "neutral"}>
+                              {CAMPAIGN_STATUS_LABEL[campaign.status] || campaign.status}
                             </Badge>
                           </TableCell>
                           <TableCell>{campaign.stats.total}</TableCell>
                           <TableCell>{campaign.stats.sent}</TableCell>
                           <TableCell>{campaign.stats.failed}</TableCell>
-                          <TableCell>
-                            {formatDate(campaign.sentAt || campaign.createdAt)}
-                          </TableCell>
+                          <TableCell>{formatDate(campaign.sentAt || campaign.createdAt)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -523,28 +451,14 @@ function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-stone-950">
-                  Quick Actions
-                </h2>
+                <h2 className="text-lg font-semibold text-stone-950">Quick Actions</h2>
               </CardHeader>
               <CardContent className="space-y-3">
                 {[
-                  {
-                    label: "New Campaign",
-                    to: "/campaigns",
-                    icon: "campaigns",
-                  },
+                  { label: "New Campaign", to: "/campaigns", icon: "campaigns" },
                   { label: "Import Contacts", to: "/contacts", icon: "upload" },
-                  {
-                    label: "Create Template",
-                    to: "/templates",
-                    icon: "templates",
-                  },
-                  {
-                    label: "View Analytics",
-                    to: "/analytics",
-                    icon: "analytics",
-                  },
+                  { label: "Create Template", to: "/templates", icon: "templates" },
+                  { label: "View Analytics", to: "/analytics", icon: "analytics" },
                 ].map((action) => (
                   <button
                     key={action.label}
@@ -558,11 +472,7 @@ function DashboardPage() {
                       </span>
                       {action.label}
                     </span>
-                    <Icon
-                      name="chevronRight"
-                      size={16}
-                      className="text-stone-400"
-                    />
+                    <Icon name="chevronRight" size={16} className="text-stone-400" />
                   </button>
                 ))}
               </CardContent>
@@ -572,20 +482,14 @@ function DashboardPage() {
           <section className="grid gap-6 xl:grid-cols-2">
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-stone-950">
-                  Sending Health
-                </h2>
+                <h2 className="text-lg font-semibold text-stone-950">Sending Health</h2>
               </CardHeader>
               <CardContent>
                 {defaultSmtp ? (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-stone-950">
-                        {defaultSmtp.name}
-                      </p>
-                      <Badge
-                        variant={defaultSmtp.isActive ? "success" : "neutral"}
-                      >
+                      <p className="text-sm font-medium text-stone-950">{defaultSmtp.name}</p>
+                      <Badge variant={defaultSmtp.isActive ? "success" : "neutral"}>
                         {defaultSmtp.isActive ? "Active" : "Inactive"}
                       </Badge>
                     </div>
@@ -625,12 +529,8 @@ function DashboardPage() {
 
             <Card>
               <CardHeader>
-                <h2 className="text-lg font-semibold text-stone-950">
-                  Needs Attention
-                </h2>
-                <p className="mt-1 text-sm text-stone-500">
-                  Things worth a look before you send.
-                </p>
+                <h2 className="text-lg font-semibold text-stone-950">Needs Attention</h2>
+                <p className="mt-1 text-sm text-stone-500">Things worth a look before you send.</p>
               </CardHeader>
               <CardContent className="space-y-3">
                 {attentionItems.length === 0 ? (
@@ -639,12 +539,8 @@ function DashboardPage() {
                       <Icon name="check" size={18} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-emerald-900">
-                        You're all caught up
-                      </p>
-                      <p className="text-sm text-emerald-700">
-                        Nothing needs your attention right now.
-                      </p>
+                      <p className="text-sm font-semibold text-emerald-900">You're all caught up</p>
+                      <p className="text-sm text-emerald-700">Nothing needs your attention right now.</p>
                     </div>
                   </div>
                 ) : (
@@ -664,25 +560,14 @@ function DashboardPage() {
                                 : "bg-sky-100 text-sky-600",
                           )}
                         >
-                          <Icon
-                            name={ATTENTION_TONE_ICON[item.tone] || "info"}
-                            size={16}
-                          />
+                          <Icon name={ATTENTION_TONE_ICON[item.tone] || "info"} size={16} />
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-stone-950">
-                            {item.title}
-                          </p>
-                          <p className="mt-0.5 text-sm text-stone-500">
-                            {item.detail}
-                          </p>
+                          <p className="text-sm font-semibold text-stone-950">{item.title}</p>
+                          <p className="mt-0.5 text-sm text-stone-500">{item.detail}</p>
                         </div>
                       </div>
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => navigate(item.to)}
-                      >
+                      <Button variant="secondary" size="sm" onClick={() => navigate(item.to)}>
                         {item.actionLabel}
                       </Button>
                     </div>

@@ -16,31 +16,24 @@ function StatCard({ title, value, changePercent, icon, tone = "neutral" }) {
 
   return (
     <Card className="transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]">
-      <CardContent className="space-y-4 px-4 py-5 sm:px-6 sm:py-6">
-        <div className="flex min-w-0 items-center gap-2.5">
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-2.5">
           <div
             className={`flex h-7 w-7 flex-none items-center justify-center rounded-lg ${toneClasses[tone]}`}
           >
             <Icon name={icon} size={14} />
           </div>
-
-          <p className="min-w-0 whitespace-normal break-words text-sm font-medium leading-5 text-stone-600">
-            {title}
-          </p>
+          <p className="truncate text-sm font-medium text-stone-600">{title}</p>
         </div>
 
-        <p className="text-3xl font-semibold tracking-tight text-stone-950">
-          {value}
-        </p>
+        <p className="text-3xl font-semibold tracking-tight text-stone-950">{value}</p>
 
         {hasTrend ? (
           <div className="flex items-center justify-between">
             <span className="text-xs text-stone-400">vs last month</span>
             <span
               className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-semibold ${
-                isPositive
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "bg-rose-50 text-rose-600"
+                isPositive ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
               }`}
             >
               <Icon name={isPositive ? "trendUp" : "trendDown"} size={10} />

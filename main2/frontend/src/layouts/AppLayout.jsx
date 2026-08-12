@@ -135,9 +135,7 @@ function AppLayout() {
               MF
             </div>
             <div>
-              <p className="text-sm font-semibold text-stone-950">
-                Nuform Social Workspace
-              </p>
+              <p className="text-sm font-semibold text-stone-950">Nuform Social Workspace</p>
             </div>
           </div>
         ) : (
@@ -148,7 +146,7 @@ function AppLayout() {
         <Button
           variant="ghost"
           size="icon"
-          className="hidden text-stone-500 xl:inline-flex"
+          className="hidden text-stone-500 lg:inline-flex"
           onClick={() => setIsSidebarCollapsed((currentValue) => !currentValue)}
           aria-label="Toggle sidebar"
         >
@@ -217,9 +215,9 @@ function AppLayout() {
       <div className="flex min-h-screen">
         <aside
           className={cn(
-            "sticky top-0 hidden h-screen border-r border-stone-200 bg-white xl:block",
+            "sticky top-0 hidden h-screen border-r border-stone-200 bg-white lg:block",
             "transition-[width] duration-200 ease-out",
-            isSidebarCollapsed ? "w-20" : "w-60",
+            isSidebarCollapsed ? "w-20" : "w-72",
           )}
         >
           {sidebarContent}
@@ -229,7 +227,7 @@ function AppLayout() {
           open={isMobileSidebarOpen}
           title="Navigation"
           onClose={() => setIsMobileSidebarOpen(false)}
-          width="w-[min(18rem,calc(100vw-1rem))]"
+          width="w-[min(18rem,calc(100vw-2rem))]"
         >
           <div className="h-full">{sidebarContent}</div>
         </Drawer>
@@ -240,7 +238,7 @@ function AppLayout() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="xl:hidden"
+                className="lg:hidden"
                 onClick={() => setIsMobileSidebarOpen(true)}
                 aria-label="Open navigation"
               >
@@ -264,7 +262,7 @@ function AppLayout() {
                 </div>
               </div>
 
-              <div className="hidden items-center gap-2 md:flex">
+              <div className="hidden min-w-0 items-center gap-2 md:flex">
                 <Breadcrumbs items={breadcrumbItems} />
               </div>
 
@@ -272,9 +270,9 @@ function AppLayout() {
 
               <Dropdown
                 trigger={
-                  <div className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-2 py-1.5 shadow-[0_1px_2px_rgba(28,25,23,0.04)]">
+                  <div className="flex min-w-0 items-center gap-2 rounded-xl border border-stone-200 bg-white px-2 py-1.5 shadow-[0_1px_2px_rgba(28,25,23,0.04)]">
                     <Avatar name={user?.name || "User"} size="sm" />
-                    <div className="hidden text-left sm:block">
+                    <div className="hidden min-w-0 text-left sm:block">
                       <p className="text-sm font-medium text-stone-950">
                         {user?.name || "Account"}
                       </p>
@@ -308,7 +306,7 @@ function AppLayout() {
             </div>
           </header>
 
-          <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <main className="min-w-0 flex-1 px-3 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
             <div className="mx-auto w-full max-w-[1600px]">
               <Outlet />
             </div>

@@ -448,12 +448,11 @@ function CampaignsPage() {
                       <TableCell>
                         {formatDateTime(campaign.createdAt)}
                       </TableCell>
-                      <TableCell className="min-w-[180px] text-right">
-                        <div className="flex items-center justify-end gap-2 whitespace-nowrap">
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
                           {campaign.status === "draft" ? (
                             <Button
                               size="sm"
-                              className="min-w-[110px] whitespace-nowrap px-4"
                               leftIcon={<Icon name="mail" size={14} />}
                               onClick={() => setSendTarget(campaign)}
                             >
