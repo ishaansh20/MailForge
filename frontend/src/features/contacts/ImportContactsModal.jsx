@@ -1,10 +1,18 @@
 import { useState } from "react";
+import * as XLSX from "xlsx";
 import { Modal } from "../../components/ui/Modal.jsx";
 import { Button } from "../../components/ui/Button.jsx";
 import { Badge } from "../../components/ui/Badge.jsx";
 import { Icon } from "../../components/ui/Icon.jsx";
 
-function ImportContactsModal({ open, isImporting, result, error, onClose, onImport }) {
+function ImportContactsModal({
+  open,
+  isImporting,
+  result,
+  error,
+  onClose,
+  onImport,
+}) {
   const [fileName, setFileName] = useState("");
 
   async function handleFileChange(event) {
@@ -15,17 +23,46 @@ function ImportContactsModal({ open, isImporting, result, error, onClose, onImpo
     }
 
     setFileName(file.name);
-    const csvText = await file.text();
-    onImport(csvText);
-  }
 
+    try {
+      const extension = file.name.split(".").pop()?.toLowerCase();
+
+      if (extension === "xlsx" || extension === "xls") {
+        const arrayBuffer = await file.arrayBuffer();
+
+        const workbook = XLSX.read(arrayBuffer, {
+          type: "array",
+        });
+
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        const csvText = XLSX.utils.sheet_to_csv(worksheet);
+
+        onImport(csvText);
+        return;
+      }
+
+      const csvText = await file.text();
+      onImport(csvText);
+    } catch (err) {
+      console.error("Failed to read contacts file:", err);
+    }
+  }
   return (
-    <Modal open={open} title="Import Contacts" onClose={onClose} maxWidth="max-w-lg">
+    <Modal
+      open={open}
+      title="Import Contacts"
+      onClose={onClose}
+      maxWidth="max-w-lg"
+    >
       <div className="space-y-5">
         <p className="text-sm leading-6 text-stone-600">
-          Upload a CSV file with <code className="rounded bg-stone-100 px-1.5 py-0.5">name</code>{" "}
-          and <code className="rounded bg-stone-100 px-1.5 py-0.5">email</code> columns. Rows with
-          invalid or duplicate emails are skipped automatically and reported below.
+          Upload a CSV or Excel file with{" "}
+          <code className="rounded bg-stone-100 px-1.5 py-0.5">name</code> and{" "}
+          <code className="rounded bg-stone-100 px-1.5 py-0.5">email</code>{" "}
+          columns. Rows with invalid or duplicate emails are skipped
+          automatically and reported below.
         </p>
 
         {error ? (
@@ -40,13 +77,15 @@ function ImportContactsModal({ open, isImporting, result, error, onClose, onImpo
         >
           <Icon name="upload" size={22} className="text-stone-400" />
           <span className="text-sm font-medium text-stone-700">
-            {fileName || "Click to choose a CSV file"}
+            {fileName || "Click to choose a CSV or Excel file"}
           </span>
-          <span className="text-xs text-stone-400">.csv files only</span>
+          <span className="text-xs text-stone-400">
+            CSV or Excel files (.csv, .xlsx, .xls)
+          </span>
           <input
             id="contacts-csv-input"
             type="file"
-            accept=".csv,text/csv"
+            accept=".csv,text/csv,.xlsx,.xls"
             className="hidden"
             disabled={isImporting}
             onChange={handleFileChange}
@@ -54,7 +93,9 @@ function ImportContactsModal({ open, isImporting, result, error, onClose, onImpo
         </label>
 
         {isImporting ? (
-          <p className="text-center text-sm text-stone-500">Importing contacts…</p>
+          <p className="text-center text-sm text-stone-500">
+            Importing contacts…
+          </p>
         ) : null}
 
         {result ? (
@@ -64,7 +105,9 @@ function ImportContactsModal({ open, isImporting, result, error, onClose, onImpo
               <Badge variant={result.skipped > 0 ? "warning" : "neutral"}>
                 {result.skipped} skipped
               </Badge>
-              <span className="text-xs text-stone-400">{result.totalRows} rows total</span>
+              <span className="text-xs text-stone-400">
+                {result.totalRows} rows total
+              </span>
             </div>
 
             {result.errors.length > 0 ? (
