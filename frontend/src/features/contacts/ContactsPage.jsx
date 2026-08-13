@@ -68,7 +68,12 @@ function ContactsPage() {
   const toast = useToast();
 
   const [items, setItems] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1 });
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
 
@@ -120,7 +125,8 @@ function ContactsPage() {
       } catch (error) {
         if (!ignore) {
           setFetchError(
-            error?.response?.data?.message || "Unable to load contacts right now.",
+            error?.response?.data?.message ||
+              "Unable to load contacts right now.",
           );
         }
       } finally {
@@ -168,7 +174,10 @@ function ContactsPage() {
     try {
       if (formMode === "edit") {
         await updateContact(editingId, payload);
-        toast.success("Contact updated", `"${payload.name}" was saved successfully.`);
+        toast.success(
+          "Contact updated",
+          `"${payload.name}" was saved successfully.`,
+        );
       } else {
         await createContact(payload);
         toast.success("Contact created", `"${payload.name}" was added.`);
@@ -188,12 +197,16 @@ function ContactsPage() {
 
     try {
       await setContactStatus(contact.id, status);
-      toast.success("Contact updated", `"${contact.name}" is now marked as ${statusLabel[status].toLowerCase()}.`);
+      toast.success(
+        "Contact updated",
+        `"${contact.name}" is now marked as ${statusLabel[status].toLowerCase()}.`,
+      );
       refetch();
     } catch (error) {
       toast.error(
         "Unable to update contact",
-        error?.response?.data?.message || "Something went wrong while updating this contact.",
+        error?.response?.data?.message ||
+          "Something went wrong while updating this contact.",
       );
     } finally {
       setRowActionId(null);
@@ -213,7 +226,8 @@ function ContactsPage() {
     } catch (error) {
       toast.error(
         "Unable to delete contact",
-        error?.response?.data?.message || "Something went wrong while deleting this contact.",
+        error?.response?.data?.message ||
+          "Something went wrong while deleting this contact.",
       );
     } finally {
       setIsDeleting(false);
@@ -240,10 +254,17 @@ function ContactsPage() {
 
     try {
       const result = await importContacts(csvText);
+
       setImportResult(result);
+
+      if (result.imported > 0) {
+        setIsImportOpen(false);
+        refetch();
+      }
     } catch (error) {
       setImportError(
-        error?.response?.data?.message || "Unable to import this file right now.",
+        error?.response?.data?.message ||
+          "Unable to import this file right now.",
       );
     } finally {
       setIsImporting(false);
@@ -270,7 +291,10 @@ function ContactsPage() {
             >
               Import CSV
             </Button>
-            <Button leftIcon={<Icon name="plus" size={16} />} onClick={openAddModal}>
+            <Button
+              leftIcon={<Icon name="plus" size={16} />}
+              onClick={openAddModal}
+            >
               Add Contact
             </Button>
           </div>
@@ -337,16 +361,24 @@ function ContactsPage() {
                     <TableHeaderCell>Email</TableHeaderCell>
                     <TableHeaderCell>Status</TableHeaderCell>
                     <TableHeaderCell>Added</TableHeaderCell>
-                    <TableHeaderCell className="text-right">Actions</TableHeaderCell>
+                    <TableHeaderCell className="text-right">
+                      Actions
+                    </TableHeaderCell>
                   </tr>
                 </TableHead>
                 <TableBody>
                   {items.map((contact) => (
                     <TableRow key={contact.id}>
-                      <TableCell className="font-medium text-stone-950">{contact.name}</TableCell>
+                      <TableCell className="font-medium text-stone-950">
+                        {contact.name}
+                      </TableCell>
                       <TableCell>{contact.email}</TableCell>
                       <TableCell>
-                        <Badge variant={statusBadgeVariant[contact.status] || "neutral"}>
+                        <Badge
+                          variant={
+                            statusBadgeVariant[contact.status] || "neutral"
+                          }
+                        >
                           {statusLabel[contact.status] || contact.status}
                         </Badge>
                       </TableCell>
@@ -360,8 +392,14 @@ function ContactsPage() {
                           }
                         >
                           <div className="space-y-1">
-                            <DropdownItem onClick={() => openEditModal(contact)}>
-                              <Icon name="edit" size={14} className="mr-2 inline" />
+                            <DropdownItem
+                              onClick={() => openEditModal(contact)}
+                            >
+                              <Icon
+                                name="edit"
+                                size={14}
+                                className="mr-2 inline"
+                              />
                               Edit
                             </DropdownItem>
                             {allStatuses
@@ -370,13 +408,22 @@ function ContactsPage() {
                                 <DropdownItem
                                   key={status}
                                   disabled={rowActionId === contact.id}
-                                  onClick={() => handleSetStatus(contact, status)}
+                                  onClick={() =>
+                                    handleSetStatus(contact, status)
+                                  }
                                 >
                                   Mark {statusLabel[status]}
                                 </DropdownItem>
                               ))}
-                            <DropdownItem danger onClick={() => setDeleteTarget(contact)}>
-                              <Icon name="trash" size={14} className="mr-2 inline" />
+                            <DropdownItem
+                              danger
+                              onClick={() => setDeleteTarget(contact)}
+                            >
+                              <Icon
+                                name="trash"
+                                size={14}
+                                className="mr-2 inline"
+                              />
                               Delete
                             </DropdownItem>
                           </div>

@@ -194,8 +194,8 @@ function ImportContactsModal({
               </Button>
             </div>
 
-            <div className="max-h-[450px] overflow-auto">
-              <table className="min-w-full">
+            <div className="max-h-[500px] overflow-y-auto overflow-x-auto">
+              <table className="min-w-full table-fixed">
                 <thead className="sticky top-0 bg-stone-50">
                   <tr>
                     <th className="px-5 py-3 text-left text-xs font-semibold uppercase text-stone-500">
