@@ -292,7 +292,7 @@ function CampaignAnalyticsPage() {
                             </p>
 
                             <p className="text-xs font-medium text-stone-500">
-                              Latest: {formatDateTime(recipient.openedAt)}
+                            {formatDateTime(recipient.openedAt)}
                             </p>
                           </div>
                         ) : (
@@ -313,7 +313,7 @@ function CampaignAnalyticsPage() {
                             </p>
 
                             <p className="text-xs font-medium text-stone-500">
-                              Latest: {formatDateTime(recipient.clickedAt)}
+                             {formatDateTime(recipient.clickedAt)}
                             </p>
                           </div>
                         ) : (
