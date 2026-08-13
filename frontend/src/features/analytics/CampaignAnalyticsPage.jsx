@@ -93,13 +93,8 @@ function CampaignAnalyticsPage() {
 
     loadCampaignDetails();
 
-    const refreshInterval = window.setInterval(() => {
-      loadCampaignDetails();
-    }, 10000);
-
     return () => {
       ignore = true;
-      window.clearInterval(refreshInterval);
     };
   }, [campaignId, page]);
 
