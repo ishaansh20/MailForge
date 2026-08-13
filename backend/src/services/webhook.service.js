@@ -118,15 +118,12 @@ async function handleBrevoEvent(payload) {
     return;
   }
 
-  if (
-    event === "opened" ||
-    event === "unique_opened" ||
-    event === "uniqueOpened"
-  ) {
+  if (event === "opened") {
     const isFirstOpen = !recipient.openedAt;
 
     recipient.openCount += 1;
-    if (eventDate) {
+
+    if (eventDate && (!recipient.openedAt || eventDate > recipient.openedAt)) {
       recipient.openedAt = eventDate;
     }
 
@@ -145,7 +142,11 @@ async function handleBrevoEvent(payload) {
     const isFirstClick = !recipient.clickedAt;
 
     recipient.clickCount += 1;
-    if (eventDate) {
+
+    if (
+      eventDate &&
+      (!recipient.clickedAt || eventDate > recipient.clickedAt)
+    ) {
       recipient.clickedAt = eventDate;
     }
 

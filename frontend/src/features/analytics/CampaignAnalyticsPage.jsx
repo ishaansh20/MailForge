@@ -93,8 +93,13 @@ function CampaignAnalyticsPage() {
 
     loadCampaignDetails();
 
+    const refreshInterval = window.setInterval(() => {
+      loadCampaignDetails();
+    }, 10000);
+
     return () => {
       ignore = true;
+      window.clearInterval(refreshInterval);
     };
   }, [campaignId, page]);
 
@@ -292,7 +297,7 @@ function CampaignAnalyticsPage() {
                             </p>
 
                             <p className="text-xs font-medium text-stone-500">
-                            {formatDateTime(recipient.openedAt)}
+                              {formatDateTime(recipient.openedAt)}
                             </p>
                           </div>
                         ) : (
@@ -313,7 +318,7 @@ function CampaignAnalyticsPage() {
                             </p>
 
                             <p className="text-xs font-medium text-stone-500">
-                             {formatDateTime(recipient.clickedAt)}
+                              {formatDateTime(recipient.clickedAt)}
                             </p>
                           </div>
                         ) : (
