@@ -12,7 +12,10 @@ function appendUnsubscribeFooter(html, unsubscribeUrl) {
 }
 
 function injectUnsubscribeUrl(html, unsubscribeUrl) {
-  const withTokenReplaced = html.replace(UNSUBSCRIBE_TOKEN_PATTERN, unsubscribeUrl);
+  const withTokenReplaced = html.replace(
+    UNSUBSCRIBE_TOKEN_PATTERN,
+    unsubscribeUrl,
+  );
 
   if (withTokenReplaced !== html) {
     return withTokenReplaced;
@@ -21,14 +24,33 @@ function injectUnsubscribeUrl(html, unsubscribeUrl) {
   return appendUnsubscribeFooter(html, unsubscribeUrl);
 }
 
-async function sendCampaignEmailToRecipient({ campaign, smtpConfig, recipient, frontendUrl }) {
+async function sendCampaignEmailToRecipient({
+  campaign,
+  smtpConfig,
+  recipient,
+  frontendUrl,
+}) {
   const unsubscribeUrl = `${frontendUrl}/unsubscribe/${recipient.unsubscribeToken}`;
-  const html = injectUnsubscribeUrl(personalize(campaign.body, recipient.name), unsubscribeUrl);
+  const html = injectUnsubscribeUrl(
+    personalize(campaign.body, recipient.name),
+    unsubscribeUrl,
+  );
   const subject = personalize(campaign.subject, recipient.name);
 
   if (smtpConfig.transport === "brevo_api") {
-    const result = await sendViaBrevoApi({ smtpConfig, to: recipient.email, subject, html });
-    return { accepted: [recipient.email], rejected: [], messageId: result.messageId || null };
+    const result = await sendViaBrevoApi({
+      smtpConfig,
+      to: recipient.email,
+      subject,
+      html,
+      campaignId: campaign._id.toString(),
+      recipientId: recipient._id.toString(),
+    });
+    return {
+      accepted: [recipient.email],
+      rejected: [],
+      messageId: result.messageId || null,
+    };
   }
 
   const transporter = createTransporter(smtpConfig);

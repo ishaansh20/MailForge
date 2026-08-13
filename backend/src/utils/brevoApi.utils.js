@@ -17,11 +17,21 @@ async function verifyBrevoApiKey(smtpConfig) {
 
   if (!response.ok) {
     const body = await response.text();
-    throw new Error(`Brevo rejected the API key (${response.status}): ${body.slice(0, 200)}`);
+    throw new Error(
+      `Brevo rejected the API key (${response.status}): ${body.slice(0, 200)}`,
+    );
   }
 }
 
-async function sendViaBrevoApi({ smtpConfig, to, subject, html, text }) {
+async function sendViaBrevoApi({
+  smtpConfig,
+  to,
+  subject,
+  html,
+  text,
+  campaignId = null,
+  recipientId = null,
+}) {
   const response = await fetch(`${BREVO_API_BASE}/smtp/email`, {
     method: "POST",
     headers: {
@@ -30,18 +40,31 @@ async function sendViaBrevoApi({ smtpConfig, to, subject, html, text }) {
       accept: "application/json",
     },
     body: JSON.stringify({
-      sender: { name: smtpConfig.fromName, email: smtpConfig.fromEmail },
+      sender: {
+        name: smtpConfig.fromName,
+        email: smtpConfig.fromEmail,
+      },
       to: [{ email: to }],
       subject,
       htmlContent: html,
       textContent: text,
+
+      ...(campaignId && recipientId
+        ? {
+            headers: {
+              "X-Mailin-custom": `campaignId=${campaignId};recipientId=${recipientId}`,
+            },
+          }
+        : {}),
     }),
   });
 
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    throw new Error(data.message || `Brevo API send failed (${response.status})`);
+    throw new Error(
+      data.message || `Brevo API send failed (${response.status})`,
+    );
   }
 
   return { messageId: data.messageId };

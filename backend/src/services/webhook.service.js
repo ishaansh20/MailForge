@@ -20,32 +20,96 @@ function extractMessageId(payload) {
   return payload["message-id"] || payload.messageId || null;
 }
 
+function extractMailforgeIds(payload) {
+  const custom = payload["X-Mailin-custom"] || payload["x-mailin-custom"] || "";
+
+  const values = {};
+
+  for (const part of String(custom).split(";")) {
+    const [key, value] = part.split("=");
+
+    if (key && value) {
+      values[key.trim()] = value.trim();
+    }
+  }
+
+  return {
+    campaignId: values.campaignId || null,
+    recipientId: values.recipientId || null,
+  };
+}
+
+function getBrevoEventDate(payload) {
+  if (Number.isFinite(Number(payload.ts_epoch))) {
+    return new Date(Number(payload.ts_epoch));
+  }
+
+  if (Number.isFinite(Number(payload.ts_event))) {
+    return new Date(Number(payload.ts_event) * 1000);
+  }
+
+  return null;
+}
+
 async function handleBrevoEvent(payload) {
   console.log("[BREVO WEBHOOK]", JSON.stringify(payload));
   const event = payload.event;
   const messageId = extractMessageId(payload);
 
-  if (!event || !messageId) {
-    console.warn("[BREVO WEBHOOK] Missing event or message-id", payload);
+  const { campaignId, recipientId } = extractMailforgeIds(payload);
+  const eventDate = getBrevoEventDate(payload);
+
+  if (!event) {
+    console.warn("[BREVO WEBHOOK] Missing event", payload);
     return;
   }
+  let recipient = null;
 
-  const recipient = await CampaignRecipient.findOne({
-    providerMessageId: messageId,
-  });
+  if (recipientId) {
+    recipient = await CampaignRecipient.findById(recipientId);
+  }
+
+  if (!recipient && messageId) {
+    recipient = await CampaignRecipient.findOne({
+      providerMessageId: messageId,
+    });
+  }
 
   if (!recipient) {
     console.warn("[BREVO WEBHOOK] Recipient not found", {
       event,
       messageId,
+      campaignId,
+      recipientId,
       email: payload.email,
     });
     return;
   }
 
+  if (campaignId && recipient.campaign?.toString() !== campaignId) {
+    console.warn("[BREVO WEBHOOK] Campaign mismatch", {
+      event,
+      messageId,
+      campaignId,
+      recipientId,
+      databaseCampaignId: recipient.campaign?.toString(),
+    });
+    return;
+  }
+
+  console.log("[BREVO WEBHOOK] MAPPED", {
+    event,
+    messageId,
+    campaignId,
+    recipientId,
+    email: payload.email,
+    databaseRecipientId: recipient._id.toString(),
+    databaseCampaignId: recipient.campaign?.toString(),
+  });
+
   if (event === "delivered") {
-    if (!recipient.deliveredAt) {
-      recipient.deliveredAt = new Date();
+    if (!recipient.deliveredAt && eventDate) {
+      recipient.deliveredAt = eventDate;
       await recipient.save();
       await Campaign.findByIdAndUpdate(recipient.campaign, {
         $inc: { "stats.delivered": 1 },
@@ -62,7 +126,9 @@ async function handleBrevoEvent(payload) {
     const isFirstOpen = !recipient.openedAt;
 
     recipient.openCount += 1;
-    recipient.openedAt = new Date();
+    if (eventDate) {
+      recipient.openedAt = eventDate;
+    }
 
     await recipient.save();
 
@@ -79,7 +145,10 @@ async function handleBrevoEvent(payload) {
     const isFirstClick = !recipient.clickedAt;
 
     recipient.clickCount += 1;
-    recipient.clickedAt = new Date();
+    if (eventDate) {
+      recipient.clickedAt = eventDate;
+    }
+
     recipient.lastClickedUrl = payload.link || recipient.lastClickedUrl;
 
     await recipient.save();
